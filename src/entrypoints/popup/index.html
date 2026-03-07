@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT Archive</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📚 ChatGPT Archive</h1>
+      <p class="subtitle">Secure backup & offline viewer</p>
+    </header>
+
+    <main>
+      <!-- Status Section -->
+      <div id="status-section" class="status-section">
+        <div id="status-indicator" class="status-indicator">
+          <span class="status-dot"></span>
+          <span id="status-text">Checking...</span>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div id="stats-section" class="stats-section hidden">
+        <div class="stat-card">
+          <span class="stat-number" id="archived-count">0</span>
+          <span class="stat-label">Archived</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number" id="storage-size">0MB</span>
+          <span class="stat-label">Storage</span>
+        </div>
+      </div>
+
+      <!-- Info Section -->
+      <div id="info-section" class="info-section hidden">
+        <div class="info-card">
+          <div class="info-row">
+            <span class="info-label">Conversations:</span>
+            <span id="conversation-count" class="info-value">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Estimated time:</span>
+            <span id="estimated-time" class="info-value">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Section -->
+      <div id="progress-section" class="progress-section hidden">
+        <div class="progress-bar-container">
+          <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+        </div>
+        <div class="progress-details">
+          <p id="progress-message" class="progress-message">Initializing...</p>
+          <p id="progress-time" class="progress-time"></p>
+        </div>
+        <p id="progress-stats" class="progress-stats"></p>
+      </div>
+
+      <!-- Result Section -->
+      <div id="result-section" class="result-section hidden">
+        <div id="result-card" class="result-card">
+          <h3>✓ Backup Complete!</h3>
+          <div class="result-stats">
+            <div class="stat">
+              <span class="stat-value" id="result-success">0</span>
+              <span class="stat-label">Success</span>
+            </div>
+            <div class="stat">
+              <span class="stat-value" id="result-failed">0</span>
+              <span class="stat-label">Failed</span>
+            </div>
+          </div>
+          <p id="result-failed-ids" class="failed-ids hidden"></p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div id="action-section" class="action-section">
+        <button id="btn-viewer" class="btn btn-primary">
+          <span class="btn-icon">📚</span>
+          Open Archive
+        </button>
+        <button id="btn-extract" class="btn btn-secondary" disabled>
+          <span class="btn-icon">🔍</span>
+          Count Chats
+        </button>
+        <button id="btn-backup" class="btn btn-success" disabled>
+          <span class="btn-icon">💾</span>
+          New Backup
+        </button>
+        <button id="btn-cancel" class="btn btn-danger hidden">
+          <span class="btn-icon">✕</span>
+          Cancel
+        </button>
+        <button id="btn-retry" class="btn btn-warning hidden">
+          <span class="btn-icon">🔄</span>
+          Retry Failed
+        </button>
+        <button id="btn-new-backup" class="btn btn-primary hidden">
+          <span class="btn-icon">🔄</span>
+          New Backup
+        </button>
+      </div>
+
+      <!-- Features List -->
+      <div class="features-section">
+        <details>
+          <summary>✨ Features</summary>
+          <ul class="features-list">
+            <li>🔒 PIN protection for your archives</li>
+            <li>🔍 Full-text search across all chats</li>
+            <li>🏷️ Categorize with color tags</li>
+            <li>👁️ Hide/show individual messages</li>
+            <li>📝 Export to Notion, Obsidian & more</li>
+            <li>💾 100% local - your data stays yours</li>
+          </ul>
+        </details>
+      </div>
+
+      <!-- Instructions -->
+      <div id="instructions-section" class="instructions-section">
+        <details>
+          <summary>How to use</summary>
+          <ol>
+            <li>Click <strong>"Open Archive"</strong> to view saved conversations</li>
+            <li>Or click <strong>"New Backup"</strong> to backup from ChatGPT</li>
+            <li>On first use, you'll set a PIN for security</li>
+            <li>All data is stored locally and encrypted</li>
+          </ol>
+        </details>
+      </div>
+    </main>
+
+    <footer>
+      <p>ChatGPT Archive v1.0</p>
+    </footer>
+  </div>
+
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

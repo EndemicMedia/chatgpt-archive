@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatGPT Archive - Secure Viewer</title>
+  <link rel="stylesheet" href="./styles/viewer.css">
+  <link rel="stylesheet" href="./styles/themes.css">
+  <link rel="stylesheet" href="./styles/analysis.css">
+</head>
+<body>
+  <!-- PIN Lock Screen -->
+  <div id="pin-screen" class="pin-screen">
+    <div class="pin-container">
+      <div class="pin-icon">🔒</div>
+      <h2>ChatGPT Archive</h2>
+      <p class="pin-subtitle">Enter PIN to access your archives</p>
+      
+      <div class="pin-display">
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+        <div class="pin-dot"></div>
+      </div>
+      
+      <div class="pin-error" id="pin-error"></div>
+      
+      <div class="pin-keypad">
+        <button class="pin-key" data-key="1">1</button>
+        <button class="pin-key" data-key="2">2</button>
+        <button class="pin-key" data-key="3">3</button>
+        <button class="pin-key" data-key="4">4</button>
+        <button class="pin-key" data-key="5">5</button>
+        <button class="pin-key" data-key="6">6</button>
+        <button class="pin-key" data-key="7">7</button>
+        <button class="pin-key" data-key="8">8</button>
+        <button class="pin-key" data-key="9">9</button>
+        <button class="pin-key pin-key-clear" data-key="clear">C</button>
+        <button class="pin-key" data-key="0">0</button>
+        <button class="pin-key pin-key-enter" data-key="enter">✓</button>
+      </div>
+      
+      <p class="pin-hint">🔐 Data is encrypted locally on your device</p>
+    </div>
+  </div>
+
+  <!-- Main Application -->
+  <div id="app" class="app hidden">
+    <div class="viewer-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <h1>📚 ChatGPT Archive</h1>
+          <div class="global-stats" id="stats-container">
+            <span>Loading...</span>
+          </div>
+        </div>
+        
+        <div class="search-container">
+          <input type="text" id="search-input" class="search-input" placeholder="Search conversations...">
+        </div>
+        
+        <div class="sidebar-actions">
+          <button id="btn-advanced-search" class="btn-secondary">🔍 Advanced</button>
+          <button id="btn-global-analysis" class="btn-secondary">📊 Analytics</button>
+          <button id="btn-export-csv" class="btn-secondary">📥 Export CSV</button>
+        </div>
+        
+        <div class="conversation-list" id="conversation-list">
+          <!-- Conversations rendered here -->
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-state-icon">📚</div>
+          <h2>No Conversation Selected</h2>
+          <p>Select a conversation from the sidebar to view details</p>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detail-view" class="detail-view hidden">
+          <!-- Dynamic content rendered here -->
+        </div>
+      </main>
+    </div>
+
+    <!-- Analysis View (Overlay) -->
+    <div id="analysis-view" class="analysis-view hidden">
+      <!-- Dynamic analysis content -->
+    </div>
+  </div>
+
+  <script type="module" src="./scripts/viewer.js"></script>
+</body>
+</html>

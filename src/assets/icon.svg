@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="#10a37f"/>
+  
+  <!-- Chat bubble -->
+  <path d="M32 40 C32 35.58 35.58 32 40 32 L88 32 C92.42 32 96 35.58 96 40 L96 76 C96 80.42 92.42 84 88 84 L56 84 L40 100 L40 84 L32 84 L32 40 Z" 
+        fill="white"/>
+  
+  <!-- Download arrow -->
+  <path d="M64 48 L64 68 M64 68 L56 60 M64 68 L72 60" 
+        stroke="#10a37f" 
+        stroke-width="6" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Download bar -->
+  <line x1="52" y1="76" x2="76" y2="76" 
+        stroke="#10a37f" 
+        stroke-width="6" 
+        stroke-linecap="round"/>
+</svg>
