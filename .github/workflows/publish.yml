@@ -1,0 +1,180 @@
+name: Build and Publish Extension
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.0.1)'
+        required: true
+        type: string
+      publish_chrome:
+        description: 'Publish to Chrome Web Store'
+        required: true
+        type: boolean
+        default: true
+      publish_firefox:
+        description: 'Publish to Firefox Add-ons'
+        required: true
+        type: boolean
+        default: true
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build Chrome extension
+        run: npm run build
+
+      - name: Build Firefox extension
+        run: npm run build:firefox
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+
+      - name: Package extensions
+        run: |
+          mkdir -p dist
+          cd .output/chrome-mv3
+          zip -r ../../dist/chatgpt-archive-v${{ steps.get_version.outputs.version }}-chrome.zip .
+          cd ../firefox-mv2
+          zip -r ../../dist/chatgpt-archive-v${{ steps.get_version.outputs.version }}-firefox.zip .
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-builds
+          path: dist/
+
+  publish-chrome:
+    name: Publish to Chrome Web Store
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.publish_chrome != 'false' }}
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-builds
+          path: dist/
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Upload to Chrome Web Store
+        uses: mnao305/chrome-extension-upload@v5.0.0
+        with:
+          file-path: dist/chatgpt-archive-v${{ steps.get_version.outputs.version }}-chrome.zip
+          extension-id: ${{ secrets.CHROME_EXTENSION_ID }}
+          client-id: ${{ secrets.CHROME_CLIENT_ID }}
+          client-secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh-token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          publish: false  # Set to true to auto-publish (skips review)
+
+  publish-firefox:
+    name: Publish to Firefox Add-ons
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.publish_firefox != 'false' }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install web-ext
+        run: npm install -g web-ext
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Sign and publish to AMO
+        run: |
+          web-ext sign \
+            --channel=listed \
+            --source-dir ./.output/firefox-mv2 \
+            --artifacts-dir ./dist \
+            --api-key ${{ secrets.FIREFOX_API_KEY }} \
+            --api-secret ${{ secrets.FIREFOX_API_SECRET }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: [build, publish-chrome, publish-firefox]
+    runs-on: ubuntu-latest
+    if: always() && needs.build.result == 'success'
+    permissions:
+      contents: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-builds
+          path: dist/
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [ "${{ github.event.inputs.version }}" != "" ]; then
+            VERSION=${{ github.event.inputs.version }}
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.get_version.outputs.version }}
+          name: ChatGPT Archive v${{ steps.get_version.outputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            dist/*.zip
+          generate_release_notes: true
