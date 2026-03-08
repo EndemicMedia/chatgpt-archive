@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo Large - 920x680</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            width: 920px;
+            height: 680px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f172a 100%);
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.2) 0%, transparent 40%),
+                        radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.2) 0%, transparent 40%);
+        }
+        
+        .left {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.4);
+        }
+        
+        .logo svg {
+            width: 55px;
+            height: 55px;
+            fill: white;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.1;
+        }
+        
+        .tagline {
+            color: #8892b0;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px 16px;
+            color: #e2e8f0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .mockup {
+            width: 100%;
+            height: 90%;
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .mockup-header {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .dot.red { background: #ef4444; }
+        .dot.yellow { background: #f59e0b; }
+        .dot.green { background: #10b981; }
+        
+        .mockup-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .mockup-item {
+            background: #334155;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .mockup-item.short { width: 70%; }
+        .mockup-item.medium { width: 90%; }
+        .mockup-item.long { width: 100%; }
+        
+        .mockup-line {
+            height: 8px;
+            background: #475569;
+            border-radius: 4px;
+            margin-bottom: 6px;
+        }
+        
+        .mockup-line:last-child {
+            margin-bottom: 0;
+            width: 60%;
+        }
+    </style>
+</head>
+<body>
+    <div class="left">
+        <div class="logo">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <h1>ChatGPT<br>Archive</h1>
+        <p class="tagline">Secure Backup & Offline Viewer</p>
+        <div class="features">
+            <span class="feature">🔒 PIN Protection</span>
+            <span class="feature">📱 Offline Access</span>
+            <span class="feature">🎨 Categories</span>
+            <span class="feature">🔌 Notion</span>
+            <span class="feature">💎 Obsidian</span>
+            <span class="feature">🔍 Search</span>
+        </div>
+    </div>
+    <div class="right">
+        <div class="mockup">
+            <div class="mockup-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="mockup-content">
+                <div class="mockup-item short">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line"></div>
+                </div>
+                <div class="mockup-item medium">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line"></div>
+                </div>
+                <div class="mockup-item long">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line"></div>
+                </div>
+                <div class="mockup-item medium">
+                    <div class="mockup-line"></div>
+                    <div class="mockup-line"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Archive - Export Modal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            height: 800px;
+            width: 1280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .modal-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal {
+            background: #1e293b;
+            border-radius: 20px;
+            width: 600px;
+            max-width: 90%;
+            border: 1px solid #334155;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .modal-subtitle {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+        
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            background: #334155;
+            border: none;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 25px 30px;
+        }
+        
+        .section-title {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+        }
+        
+        .integrations-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .integration-card {
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .integration-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .integration-card.featured {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .integration-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 10px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .integration-icon.notion {
+            background: #000;
+        }
+        
+        .integration-icon.obsidian {
+            background: #7c3aed;
+        }
+        
+        .integration-icon.workflowy {
+            color: white;
+        }
+        
+        .integration-icon.markdown {
+            background: #374151;
+        }
+        
+        .integration-icon.json {
+            background: #f59e0b;
+        }
+        
+        .integration-icon.html {
+            background: #e34c26;
+        }
+        
+        .integration-name {
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .integration-desc {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 4px;
+        }
+        
+        .formats-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .format-btn {
+            flex: 1;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px;
+            color: #94a3b8;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .format-btn:hover {
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .options-section {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .option-row:last-child {
+            border-bottom: none;
+        }
+        
+        .option-label {
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+        
+        .option-desc {
+            color: #64748b;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: #667eea;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            right: 2px;
+        }
+        
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #334155;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #94a3b8;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <div>
+                    <div class="modal-title">Export Conversation</div>
+                    <div class="modal-subtitle">Choose your destination format</div>
+                </div>
+                <button class="close-btn">×</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="section-title">Integrations</div>
+                <div class="integrations-grid">
+                    <div class="integration-card featured">
+                        <div class="integration-icon notion">📝</div>
+                        <div class="integration-name">Notion</div>
+                        <div class="integration-desc">Full formatting</div>
+                    </div>
+                    <div class="integration-card">
+                        <div class="integration-icon obsidian">💎</div>
+                        <div class="integration-name">Obsidian</div>
+                        <div class="integration-desc">Markdown + YAML</div>
+                    </div>
+                    <div class="integration-card">
+                        <div class="integration-icon workflowy">🌳</div>
+                        <div class="integration-name">Workflowy</div>
+                        <div class="integration-desc">Bullet structure</div>
+                    </div>
+                </div>
+                
+                <div class="section-title">File Formats</div>
+                <div class="formats-row">
+                    <button class="format-btn">📄 Markdown</button>
+                    <button class="format-btn">📋 JSON</button>
+                    <button class="format-btn">🌐 HTML</button>
+                    <button class="format-btn">📑 PDF</button>
+                </div>
+                
+                <div class="options-section">
+                    <div class="option-row">
+                        <div>
+                            <div class="option-label">Include metadata</div>
+                            <div class="option-desc">Date, model, conversation ID</div>
+                        </div>
+                        <div class="toggle"></div>
+                    </div>
+                    <div class="option-row">
+                        <div>
+                            <div class="option-label">Export hidden messages</div>
+                            <div class="option-desc">Messages you've hidden from view</div>
+                        </div>
+                        <div class="toggle"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary">Cancel</button>
+                <button class="btn btn-primary">Export to Notion →</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
