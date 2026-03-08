@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Archive - Smart Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f172a;
+            height: 800px;
+            width: 1280px;
+            overflow: hidden;
+        }
+        
+        .app {
+            display: flex;
+            height: 100%;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .logo-text {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .nav-list {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #94a3b8;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+            padding: 40px;
+        }
+        
+        .search-header {
+            margin-bottom: 30px;
+        }
+        
+        .search-box-large {
+            background: #1e293b;
+            border: 2px solid #667eea;
+            border-radius: 14px;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .search-icon {
+            font-size: 20px;
+        }
+        
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            outline: none;
+        }
+        
+        .search-input::placeholder {
+            color: #64748b;
+        }
+        
+        .search-shortcut {
+            background: #334155;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #94a3b8;
+            font-size: 12px;
+            font-family: monospace;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-chip {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid #667eea;
+            color: #667eea;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-chip svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+        
+        .add-filter {
+            background: transparent;
+            border: 1px dashed #334155;
+            color: #64748b;
+        }
+        
+        .results-section {
+            flex: 1;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .results-count {
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .results-count strong {
+            color: white;
+        }
+        
+        .sort-dropdown {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        
+        .result-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .result-item {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .result-item:hover {
+            border-color: #667eea;
+        }
+        
+        .result-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(102, 126, 234, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .result-content {
+            flex: 1;
+        }
+        
+        .result-title {
+            color: white;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .result-preview {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .result-preview mark {
+            background: rgba(102, 126, 234, 0.3);
+            color: #e2e8f0;
+            padding: 1px 4px;
+            border-radius: 3px;
+        }
+        
+        .result-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .tag {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .date {
+            color: #475569;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <span class="logo-text">ChatGPT Archive</span>
+                </div>
+            </div>
+            <div class="nav-list">
+                <div class="nav-item">📑 All Conversations</div>
+                <div class="nav-item">📌 Pinned</div>
+                <div class="nav-item">⭐ Favorites</div>
+                <div class="nav-item">🗑️ Recently Deleted</div>
+                <div class="nav-item">🏷️ Categories</div>
+            </div>
+        </div>
+        
+        <div class="main">
+            <div class="search-header">
+                <div class="search-box-large">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" value="react hooks best practices" placeholder="Search conversations...">
+                    <span class="search-shortcut">⌘K</span>
+                </div>
+                
+                <div class="filter-bar">
+                    <div class="filter-chip">
+                        Category: Code
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </div>
+                    <div class="filter-chip">
+                        Date: Last 30 days
+                        <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </div>
+                    <div class="filter-chip add-filter">+ Add Filter</div>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <div class="results-header">
+                    <span class="results-count"><strong>3</strong> results found</span>
+                    <select class="sort-dropdown">
+                        <option>Sort by: Relevance</option>
+                    </select>
+                </div>
+                
+                <div class="result-list">
+                    <div class="result-item">
+                        <div class="result-icon">💻</div>
+                        <div class="result-content">
+                            <div class="result-title">React Hooks Deep Dive</div>
+                            <div class="result-preview">...useEffect and <mark>useCallback</mark> are essential for optimizing <mark>React</mark> performance. Here's how to implement <mark>best practices</mark>...</div>
+                        </div>
+                        <div class="result-meta">
+                            <span class="tag">Code</span>
+                            <span class="date">Jan 15, 2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-icon">⚛️</div>
+                        <div class="result-content">
+                            <div class="result-title">Custom Hooks Tutorial</div>
+                            <div class="result-preview">...creating reusable <mark>React hooks</mark> follows specific <mark>best practices</mark> to ensure clean code architecture...</div>
+                        </div>
+                        <div class="result-meta">
+                            <span class="tag">Tutorial</span>
+                            <span class="date">Jan 12, 2024</span>
+                        </div>
+                    </div>
+                    
+                    <div class="result-item">
+                        <div class="result-icon">🚀</div>
+                        <div class="result-content">
+                            <div class="result-title">Performance Optimization Guide</div>
+                            <div class="result-preview">...<mark>React</mark> memoization techniques and <mark>hook</mark> dependencies management are crucial for production apps...</div>
+                        </div>
+                        <div class="result-meta">
+                            <span class="tag">Performance</span>
+                            <span class="date">Jan 10, 2024</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

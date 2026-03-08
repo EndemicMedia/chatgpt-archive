@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Archive - Categories</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f172a;
+            height: 800px;
+            width: 1280px;
+            overflow: hidden;
+        }
+        
+        .app {
+            display: flex;
+            height: 100%;
+        }
+        
+        .sidebar {
+            width: 320px;
+            background: #1e293b;
+            border-right: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid #334155;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .logo-text {
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .search-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #94a3b8;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title {
+            padding: 15px 20px 10px;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .category-list {
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .category-item:hover {
+            background: #334155;
+        }
+        
+        .category-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .category-color.research { background: #8b5cf6; }
+        .category-color.code { background: #06b6d4; }
+        .category-color.writing { background: #f59e0b; }
+        .category-color.personal { background: #ec4899; }
+        .category-color.business { background: #10b981; }
+        .category-color.learning { background: #f97316; }
+        
+        .category-name {
+            flex: 1;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .category-count {
+            color: #64748b;
+            font-size: 12px;
+        }
+        
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0f172a;
+            padding: 40px;
+        }
+        
+        .main-header {
+            margin-bottom: 30px;
+        }
+        
+        .main-title {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .main-subtitle {
+            color: #64748b;
+            font-size: 16px;
+        }
+        
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .color-card {
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .color-card:hover {
+            border-color: #667eea;
+        }
+        
+        .color-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .color-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            margin: 0 auto 12px;
+        }
+        
+        .color-preview.purple { background: #8b5cf6; }
+        .color-preview.cyan { background: #06b6d4; }
+        .color-preview.orange { background: #f59e0b; }
+        .color-preview.pink { background: #ec4899; }
+        .color-preview.green { background: #10b981; }
+        .color-preview.red { background: #ef4444; }
+        .color-preview.blue { background: #3b82f6; }
+        .color-preview.gray { background: #6b7280; }
+        
+        .color-name {
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-secondary {
+            background: #1e293b;
+            color: #94a3b8;
+            border: 1px solid #334155;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    </div>
+                    <span class="logo-text">ChatGPT Archive</span>
+                </div>
+                <div class="search-box">🔍 Search conversations...</div>
+            </div>
+            
+            <div class="section-title">Categories</div>
+            <div class="category-list">
+                <div class="category-item">
+                    <div class="category-color research"></div>
+                    <span class="category-name">Research</span>
+                    <span class="category-count">24</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color code"></div>
+                    <span class="category-name">Code</span>
+                    <span class="category-count">18</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color writing"></div>
+                    <span class="category-name">Writing</span>
+                    <span class="category-count">12</span>
+                </div>
+                <div class="category-item">
+                    <div class="category-color personal"></div>
+                    <span class="category-name">Personal</span>
+                    <span class="category-count">8</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main">
+            <div class="main-header">
+                <h1 class="main-title">🎨 Color Categories</h1>
+                <p class="main-subtitle">Organize conversations with color-coded categories</p>
+            </div>
+            
+            <div class="color-grid">
+                <div class="color-card selected">
+                    <div class="color-preview purple"></div>
+                    <div class="color-name">Research</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview cyan"></div>
+                    <div class="color-name">Code</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview orange"></div>
+                    <div class="color-name">Writing</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview pink"></div>
+                    <div class="color-name">Personal</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview green"></div>
+                    <div class="color-name">Business</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview red"></div>
+                    <div class="color-name">Urgent</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview blue"></div>
+                    <div class="color-name">Learning</div>
+                </div>
+                <div class="color-card">
+                    <div class="color-preview gray"></div>
+                    <div class="color-name">Archive</div>
+                </div>
+            </div>
+            
+            <div class="action-bar">
+                <button class="btn btn-secondary">+ New Category</button>
+                <button class="btn btn-primary">Apply to Selected</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
