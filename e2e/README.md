@@ -147,3 +147,94 @@ PLAYWRIGHT_BROWSER=chromium npm run test:e2e
 # Skip build check (if extension pre-built)
 SKIP_BUILD_CHECK=1 npm run test:e2e
 ```
+
+---
+
+## Chrome Web Store Automation with Playwright MCP
+
+We successfully used **Playwright MCP (Model Context Protocol)** to automate editing the Chrome Web Store listing. This saved significant manual effort filling out the store listing form.
+
+### What We Did
+
+Instead of manually filling out the Chrome Web Store Developer Dashboard, we used Playwright MCP to:
+
+1. **Log into the Developer Dashboard** (`https://chrome.google.com/webstore/devconsole/`)
+2. **Navigate to the extension's Store Listing page**
+3. **Fill out all Privacy Practices fields automatically:**
+   - Single purpose description
+   - Permission justifications (activeTab, storage, downloads, sidePanel, host permissions)
+   - Remote code declaration (set to "No")
+   - Data usage certifications
+   - Privacy policy URL
+4. **Save the draft**
+
+### Tools Used
+
+- **Playwright MCP Server**: Provides browser automation capabilities via Model Context Protocol
+- **Browser automation**: Clicking, typing, form filling, navigation
+- **Page snapshots**: Understanding form structure and available fields
+
+### How to Replicate
+
+If you need to edit the Chrome Web Store listing again:
+
+1. **Ensure Playwright MCP is available** in your MCP client (Claude Desktop, VS Code, etc.)
+
+2. **Navigate to the Developer Dashboard:**
+   ```
+   browser_navigate: https://chrome.google.com/webstore/devconsole/
+   ```
+
+3. **Log in** (if not already logged in):
+   - The MCP can handle Google authentication with 2FA if you provide credentials
+
+4. **Navigate to your extension:**
+   - Click on "ChatGPT Archive - Secure Backup & Viewer" from the items list
+
+5. **Edit specific tabs:**
+   - **Store Listing**: Description, category, screenshots, promo tiles
+   - **Privacy**: Permission justifications, data usage, certifications
+   - **Package**: Upload new ZIP files
+   - **Distribution**: Visibility settings
+
+6. **Fill forms programmatically:**
+   ```typescript
+   // Example pattern used:
+   await browser_type({ ref: "e120", text: "Single purpose description..." });
+   await browser_click({ ref: "e214", element: "No remote code radio" });
+   await browser_click({ ref: "e58", element: "Save draft button" });
+   ```
+
+### What Was Automated
+
+| Field | Content |
+|-------|---------|
+| **Single purpose** | "This extension allows users to backup, view, and organize their ChatGPT conversations locally..." |
+| **activeTab** | "Required to access the active ChatGPT tab to extract conversation data..." |
+| **storage** | "Required to store backed-up ChatGPT conversations locally with PIN-based AES-256 encryption..." |
+| **downloads** | "Required to export backed-up conversations to files..." |
+| **sidePanel** | "Required to display the ChatGPT Archive viewer in Chrome's side panel..." |
+| **Host permission** | "Required to access chatgpt.com to extract conversation data..." |
+| **Remote code** | Selected "No, I am not using Remote code" |
+| **Data collected** | Checked "Website content" |
+| **Certifications** | All 3 data usage certifications checked |
+| **Privacy URL** | `https://github.com/EndemicMedia/chatgpt-archive/blob/main/PRIVACY.md` |
+
+### Extension ID
+
+Your Extension ID is: **`oplklijgllkfnaeleekonfhbkbnhfklk`**
+
+This is needed for:
+- GitHub Actions auto-publishing
+- Chrome Web Store API calls
+- Direct store listing URL: `https://chrome.google.com/webstore/devconsole/[publisher-id]/oplklijgllkfnaeleekonfhbkbnhfklk/edit`
+
+### Manual Edit Alternative
+
+If you prefer not to use automation, you can manually edit at:
+```
+https://chrome.google.com/webstore/devconsole/
+→ Items → ChatGPT Archive → Store Listing / Privacy / etc.
+```
+
+All the text content that was filled is documented in the privacy practices section above.

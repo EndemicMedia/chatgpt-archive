@@ -118,6 +118,19 @@ User PIN → PBKDF2 (100k iterations) → AES-256 Key
 
 ### Chrome Web Store
 
+#### Automated Store Listing (Recommended)
+
+We used **Playwright MCP** (Model Context Protocol) to automate filling out the Chrome Web Store listing. This approach:
+- Saves hours of manual form filling
+- Ensures consistency across fields
+- Can be repeated for updates
+
+**Extension ID:** `oplklijgllkfnaeleekonfhbkbnhfklk`
+
+See [`e2e/README.md`](e2e/README.md#chrome-web-store-automation-with-playwright-mcp) for detailed automation documentation.
+
+#### Manual Submission
+
 1. Build the extension:
 ```bash
 npm run build
@@ -135,10 +148,11 @@ zip -r ../../chatgpt-archive-1.0.0.zip .
 
 5. Fill in store listing:
    - Use content from `STORE_LISTING.md`
-   - Upload screenshots (1280x800 or 640x400)
-   - Upload promotional images (optional)
+   - Upload screenshots (1280x800 or 640x400) from `assets/store/`
+   - Upload promotional images (optional) from `assets/store/`
    - Privacy policy: Use `PRIVACY.md` content
    - Category: Productivity
+   - **Privacy Practices**: All permission justifications are documented in the e2e README
 
 6. Submit for review (typically 1-3 business days)
 
