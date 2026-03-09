@@ -1,23 +1,4 @@
-# GitHub Pages Configuration
 title: ChatGPT Archive
 description: Privacy-first ChatGPT backup & offline viewer
 theme: jekyll-theme-cayman
-
-# Site settings
 show_downloads: false
-google_analytics:
-
-# Plugins
-plugins:
-  - jekyll-seo-tag
-
-# SEO settings
-author:
-  name: EndemicMedia
-  email: support@endemicmedia.com
-
-# Social links
-social:
-  name: ChatGPT Archive
-  links:
-    - https://github.com/EndemicMedia/chatgpt-archive
