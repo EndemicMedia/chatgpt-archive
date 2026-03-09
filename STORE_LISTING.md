@@ -144,7 +144,7 @@ No paid tiers. No feature limits. No surprises. We believe your data should stay
 
 ---
 
-GitHub: github.com/yourusername/chatgpt-archive
+GitHub: github.com/EndemicMedia/chatgpt-archive
 Support: support@chatgptarchive.io
 ```
 

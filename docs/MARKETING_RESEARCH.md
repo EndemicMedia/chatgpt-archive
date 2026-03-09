@@ -255,7 +255,7 @@ We take your privacy seriously:
 
 📞 SUPPORT & COMMUNITY
 
-• GitHub: github.com/yourusername/chatarchive
+• GitHub: github.com/EndemicMedia/chatgpt-archive
 • Issues: Report bugs and feature requests on GitHub
 • Updates: Regular updates for ChatGPT compatibility
 
@@ -317,7 +317,7 @@ HOW TO USE:
 
 Perfect for researchers, developers, writers, students, and anyone who values their AI conversation history.
 
-GitHub: github.com/yourusername/chatarchive
+GitHub: github.com/EndemicMedia/chatgpt-archive
 ```
 
 ---

@@ -3,6 +3,25 @@ const path = require('path');
 
 (async () => {
   const browser = await chromium.launch();
+  
+  // Helper function to capture at exact dimensions
+  async function captureExact(page, file, width, height) {
+    // Create a new context with specific viewport and deviceScaleFactor
+    const context = await browser.newContext({
+      viewport: { width, height },
+      deviceScaleFactor: 1  // Force 1:1 pixel ratio
+    });
+    const p = await context.newPage();
+    
+    await p.goto(`file://${path.join(__dirname, file)}`);
+    await p.screenshot({ 
+      path: file.replace('.html', '.png'),
+      fullPage: false  // Capture viewport only
+    });
+    await context.close();
+    console.log(`✅ Created ${file.replace('.html', '.png')} (${width}x${height})`);
+  }
+  
   const page = await browser.newPage();
   
   // Screenshots (1280x800)
@@ -15,13 +34,7 @@ const path = require('path');
   ];
   
   for (const { file, width, height } of screenshots) {
-    await page.setViewportSize({ width, height });
-    await page.goto(`file://${path.join(__dirname, file)}`);
-    await page.screenshot({ 
-      path: file.replace('.html', '.png'),
-      fullPage: true 
-    });
-    console.log(`✅ Created ${file.replace('.html', '.png')}`);
+    await captureExact(page, file, width, height);
   }
   
   // Promo tiles
@@ -32,28 +45,12 @@ const path = require('path');
   ];
   
   for (const { file, width, height } of promos) {
-    await page.setViewportSize({ width, height });
-    await page.goto(`file://${path.join(__dirname, file)}`);
-    await page.screenshot({ 
-      path: file.replace('.html', '.png'),
-      fullPage: true 
-    });
-    console.log(`✅ Created ${file.replace('.html', '.png')}`);
+    await captureExact(page, file, width, height);
   }
   
-  // Store icon (128x128) - no transparency
-  await page.setViewportSize({ width: 128, height: 128 });
-  await page.goto(`file://${path.join(__dirname, 'icon-store.html')}`);
-  await page.screenshot({ 
-    path: 'icon-store.png',
-    fullPage: true
-  });
-  console.log(`✅ Created icon-store.png (128x128 store icon)`);
+  // Store icon (128x128)
+  await captureExact(page, 'icon-store.html', 128, 128);
   
   await browser.close();
   console.log('\n🎉 All store assets generated successfully!');
-  console.log('\nGenerated files:');
-  console.log('- 5 screenshots (1280x800)');
-  console.log('- 3 promo tiles (small/large/marquee)');
-  console.log('- 1 store icon (128x128)');
 })();

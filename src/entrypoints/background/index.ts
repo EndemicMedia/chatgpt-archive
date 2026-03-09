@@ -10,7 +10,7 @@ browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     // Open welcome page or instructions
     browser.tabs.create({
-      url: 'https://github.com/yourusername/chatgpt-backup#readme'
+      url: 'https://github.com/EndemicMedia/chatgpt-archive#readme'
     });
   }
 });
