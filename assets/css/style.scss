@@ -1,0 +1,130 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+/* Custom Styles for Privacy Policy */
+
+/* Improve header */
+.page-header {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  padding: 3rem 1rem;
+  
+  .project-name {
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  
+  .project-tagline {
+    font-weight: 300;
+    opacity: 0.9;
+  }
+}
+
+/* Better table styling */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.5rem 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  
+  th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: 600;
+    padding: 1rem;
+    text-align: left;
+  }
+  
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f8fafc;
+  }
+}
+
+/* Badge styling */
+img[src*="shields.io"] {
+  margin: 0.25rem;
+  border-radius: 4px;
+}
+
+/* Blockquotes for notes */
+blockquote {
+  border-left: 4px solid #667eea;
+  background: #f8fafc;
+  padding: 1rem 1.5rem;
+  border-radius: 0 8px 8px 0;
+  margin: 1.5rem 0;
+  
+  p:first-child {
+    margin-top: 0;
+  }
+  
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Horizontal rules */
+hr {
+  border: none;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+  margin: 2rem 0;
+}
+
+/* Headings with icons */
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+h3 {
+  color: #2d3748;
+  margin-top: 2rem;
+}
+
+/* Emphasis boxes */
+.main-content {
+  h2:first-of-type {
+    margin-top: 1rem;
+  }
+}
+
+/* Footer styling */
+.site-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e2e8f0;
+  text-align: center;
+  color: #718096;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 2rem 1rem;
+  }
+  
+  table {
+    font-size: 0.875rem;
+    
+    th, td {
+      padding: 0.5rem;
+    }
+  }
+}
