@@ -4,22 +4,14 @@ title: Privacy Policy
 permalink: /privacy-policy/
 ---
 
-<div align="center">
-
-# 🔒 Privacy Policy
-
-### ChatGPT Archive Extension
-
-<p>
+<!-- Header Section -->
+<p align="center">
   <img src="https://img.shields.io/badge/Privacy-First-brightgreen?style=for-the-badge&logo=shield" alt="Privacy First">
   <img src="https://img.shields.io/badge/Data-Zero%20Collection-blue?style=for-the-badge" alt="Zero Collection">
   <img src="https://img.shields.io/badge/Encryption-AES--256-purple?style=for-the-badge&logo=lock" alt="AES-256">
 </p>
 
-**Effective Date:** March 1, 2026  
-**Last Updated:** March 9, 2026
-
-</div>
+<p align="center"><strong>Effective Date:</strong> March 1, 2026<br><strong>Last Updated:</strong> March 9, 2026</p>
 
 ---
 
@@ -36,11 +28,7 @@ ChatGPT Archive is committed to protecting your privacy. This privacy policy exp
 
 ## 🛡️ Data Collection
 
-<div align="center">
-
-### **We collect ZERO personal data.**
-
-</div>
+<p align="center"><strong>We collect ZERO personal data.</strong></p>
 
 This extension:
 - ✅ Stores your ChatGPT conversations **locally on your device only**
@@ -53,7 +41,7 @@ This extension:
 ### What We DO NOT Collect:
 
 | Data Type | Collected? |
-|-----------|:----------:|
+|:----------|:----------:|
 | Personally identifiable information | ❌ No |
 | Financial or payment information | ❌ No |
 | Health information | ❌ No |
@@ -69,7 +57,7 @@ This extension:
 All data is stored:
 
 | Aspect | Details |
-|--------|---------|
+|:-------|:--------|
 | **Location** | Your browser's local storage only (never leaves your device) |
 | **Encryption** | AES-256-GCM with your PIN-derived key via PBKDF2 (100,000 iterations) |
 | **Access** | Only you, with your PIN |
@@ -80,6 +68,7 @@ All data is stored:
 ## ⏱️ Data Retention and Deletion
 
 ### Retention Period
+
 Your data is stored **indefinitely on your local device** until you choose to delete it. We do not have access to your data and cannot delete it on your behalf.
 
 ### How to Delete Your Data
@@ -151,7 +140,7 @@ This extension is **not intended for use by children under 13**. We do not knowi
 
 Our code is **open source** and available for audit:
 
-🔗 **GitHub:** [github.com/EndemicMedia/chatgpt-archive](https://github.com/EndemicMedia/chatgpt-archive)
+🔗 **[github.com/EndemicMedia/chatgpt-archive](https://github.com/EndemicMedia/chatgpt-archive)**
 
 ---
 
@@ -168,27 +157,17 @@ We will update this policy if our practices change. Changes will be:
 
 For privacy questions, data access requests, or concerns:
 
-<div align="center">
-
 | Method | Contact |
 |:-------|:--------|
 | 📧 **Email** | [support@endemicmedia.com](mailto:support@endemicmedia.com) |
 | 🐙 **GitHub Issues** | [github.com/EndemicMedia/chatgpt-archive/issues](https://github.com/EndemicMedia/chatgpt-archive/issues) |
 
-</div>
-
 We aim to respond to all privacy-related inquiries within **30 days**.
 
 ---
 
-<div align="center">
+<p align="center"><strong>Compliance Statement</strong></p>
 
-### Compliance Statement
+<p align="center">This privacy policy complies with Chrome Web Store Developer Program Policies, GDPR, CCPA, and CalOPPA.</p>
 
-This privacy policy complies with Chrome Web Store Developer Program Policies, GDPR, CCPA, and CalOPPA.
-
----
-
-*This privacy policy is provided in addition to the data disclosure information submitted in the Chrome Web Store Developer Dashboard.*
-
-</div>
+<p align="center"><em>This privacy policy is provided in addition to the data disclosure information submitted in the Chrome Web Store Developer Dashboard.</em></p>
