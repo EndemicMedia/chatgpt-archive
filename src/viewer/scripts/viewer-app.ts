@@ -201,6 +201,54 @@ function setupPinHandlers() {
     state.setupPin = '';
     showPinSetup();
   });
+  
+  // Keyboard support
+  setupKeyboardSupport();
+}
+
+/**
+ * Setup keyboard input support for PIN entry
+ */
+function setupKeyboardSupport() {
+  document.addEventListener('keydown', (e) => {
+    // Determine which screen is currently visible
+    const visibleScreen = getVisiblePinScreen();
+    if (!visibleScreen) return; // No PIN screen visible
+    
+    const key = e.key;
+    
+    // Number keys 0-9
+    if (key >= '0' && key <= '9') {
+      e.preventDefault();
+      handlePinKey(key, visibleScreen);
+    }
+    // Enter key
+    else if (key === 'Enter') {
+      e.preventDefault();
+      handlePinKey('enter', visibleScreen);
+    }
+    // Escape or Backspace to clear
+    else if (key === 'Escape' || key === 'Backspace') {
+      e.preventDefault();
+      handlePinKey('clear', visibleScreen);
+    }
+  });
+}
+
+/**
+ * Get which PIN screen is currently visible
+ */
+function getVisiblePinScreen(): string | null {
+  if (!elements.pinSetupScreen?.classList.contains('hidden')) {
+    return 'setup';
+  }
+  if (!elements.pinConfirmScreen?.classList.contains('hidden')) {
+    return 'confirm';
+  }
+  if (!elements.pinUnlockScreen?.classList.contains('hidden')) {
+    return 'unlock';
+  }
+  return null;
 }
 
 // PIN entry state
