@@ -37,3 +37,8 @@ playwright/.cache/
 
 # Temporary files
 *.local
+
+# Environment variables / Secrets
+.env
+.env.local
+.env.*.local
