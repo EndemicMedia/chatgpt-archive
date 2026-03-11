@@ -124,6 +124,8 @@ function showPinSetup() {
   elements.pinUnlockScreen?.classList.add('hidden');
   elements.app?.classList.add('hidden');
   state.setupPin = '';
+  pinEntry.setup = '';
+  pinEntry.confirm = '';
   updatePinDisplay('setup', '');
 }
 
@@ -135,6 +137,7 @@ function showPinConfirm() {
   elements.pinConfirmScreen?.classList.remove('hidden');
   elements.pinUnlockScreen?.classList.add('hidden');
   elements.app?.classList.add('hidden');
+  pinEntry.confirm = '';
   updatePinDisplay('confirm', '');
 }
 
@@ -146,6 +149,7 @@ function showPinUnlock() {
   elements.pinConfirmScreen?.classList.add('hidden');
   elements.pinUnlockScreen?.classList.remove('hidden');
   elements.app?.classList.add('hidden');
+  pinEntry.unlock = '';
   updatePinDisplay('unlock', '');
 }
 
@@ -205,12 +209,12 @@ function handlePinKey(keyValue: string | null, screen: string | null) {
     clearError(screen);
   } else if (keyValue === 'enter') {
     handlePinSubmit(screen);
-  } else if (keyValue && pinEntry[screenKey].length < 4) {
+  } else if (keyValue && pinEntry[screenKey].length < 6) {
     pinEntry[screenKey] += keyValue;
     updatePinDisplay(screen, pinEntry[screenKey]);
     
-    // Auto-submit when 4 digits entered
-    if (pinEntry[screenKey].length === 4) {
+    // Auto-submit when 6 digits entered (max), allow manual submit at 4-5
+    if (pinEntry[screenKey].length === 6) {
       setTimeout(() => handlePinSubmit(screen), 200);
     }
   }
