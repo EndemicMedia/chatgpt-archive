@@ -11,7 +11,8 @@ import {
   initializeArchive,
   unlockArchive,
   getConversations,
-  lockArchive
+  lockArchive,
+  hasArchiveData
 } from '@/utils/storage';
 import {
   cleanContent,
@@ -87,31 +88,45 @@ export async function initViewerApp() {
   elements.analysisView = document.getElementById('analysis-view');
   elements.statsContainer = document.getElementById('stats-container');
   
-  // Check if archive is initialized
+  // Setup PIN handlers (needed even if not shown initially)
+  setupPinHandlers();
+  
+  // Setup search
+  setupSearch();
+  
+  // Setup navigation
+  setupNavigation();
+  
   try {
-    state.isInitialized = await isArchiveInitialized();
-    console.log('[ChatGPT Archive Viewer] Archive initialized:', state.isInitialized);
+    // Check if there's any data to protect
+    const hasData = await hasArchiveData();
+    console.log('[ChatGPT Archive Viewer] Has archive data:', hasData);
     
-    if (!state.isInitialized) {
-      // Show PIN setup for first-time users
-      showPinSetup();
+    if (!hasData) {
+      // No data yet - show empty state directly, no PIN needed
+      console.log('[ChatGPT Archive Viewer] No data, showing empty state');
+      showApp();
+      showEmptyState();
     } else {
-      // Show PIN unlock for returning users
-      showPinUnlock();
+      // Has data - check if we need PIN unlock
+      state.isInitialized = await isArchiveInitialized();
+      
+      if (state.isInitialized) {
+        // Data exists and PIN is set - require unlock
+        console.log('[ChatGPT Archive Viewer] Data exists, PIN required');
+        showPinUnlock();
+      } else {
+        // Data exists but no PIN (shouldn't happen normally)
+        // Initialize with PIN setup
+        console.log('[ChatGPT Archive Viewer] Data exists but no PIN, showing setup');
+        showPinSetup();
+      }
     }
-    
-    // Setup PIN handlers
-    setupPinHandlers();
-    
-    // Setup search
-    setupSearch();
-    
-    // Setup navigation
-    setupNavigation();
-    
   } catch (error) {
     console.error('[ChatGPT Archive Viewer] Initialization error:', error);
-    showPinSetup();
+    // On error, show empty state
+    showApp();
+    showEmptyState();
   }
 }
 
@@ -335,7 +350,13 @@ function showEmptyState() {
       <div class="empty-state">
         <div class="empty-state-icon">📭</div>
         <h3>No Conversations Yet</h3>
-        <p>Go to chatgpt.com and click "New Backup" to save your conversations.</p>
+        <p>Your archive is empty. To get started:</p>
+        <ol class="empty-state-steps">
+          <li>Go to <strong>chatgpt.com</strong></li>
+          <li>Click the extension icon and select <strong>"New Backup"</strong></li>
+          <li>Your conversations will be saved here with PIN protection</li>
+        </ol>
+        <p class="empty-state-note">🔒 A PIN will be set up when you create your first backup</p>
       </div>
     `;
   }

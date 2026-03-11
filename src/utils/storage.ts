@@ -318,6 +318,15 @@ export async function getMetadata(): Promise<ArchiveMetadata> {
 }
 
 /**
+ * Check if archive has data (unencrypted check)
+ * Returns true if there are conversations stored
+ */
+export async function hasArchiveData(): Promise<boolean> {
+  const metadata = await getMetadata();
+  return metadata.conversationCount > 0;
+}
+
+/**
  * Update metadata
  */
 export async function updateMetadata(updates: Partial<ArchiveMetadata>): Promise<void> {
