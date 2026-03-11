@@ -63,7 +63,7 @@ jobs:
           mkdir -p dist
           cd .output/chrome-mv3
           zip -r ../../dist/chatgpt-archive-v${{ steps.get_version.outputs.version }}-chrome.zip .
-          cd ../firefox-mv2
+          cd ../firefox-mv3
           zip -r ../../dist/chatgpt-archive-v${{ steps.get_version.outputs.version }}-firefox.zip .
 
       - name: Upload build artifacts
@@ -139,7 +139,7 @@ jobs:
         run: |
           web-ext sign \
             --channel=listed \
-            --source-dir ./.output/firefox-mv2 \
+            --source-dir ./.output/firefox-mv3 \
             --artifacts-dir ./dist \
             --api-key ${{ secrets.FIREFOX_API_KEY }} \
             --api-secret ${{ secrets.FIREFOX_API_SECRET }}
