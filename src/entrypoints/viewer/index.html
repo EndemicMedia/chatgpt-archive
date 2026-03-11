@@ -12,9 +12,10 @@
   <!-- PIN Setup Screen (First Time) -->
   <div id="pin-setup-screen" class="pin-screen hidden">
     <div class="pin-container">
-      <div class="pin-icon">🔐</div>
-      <h2>Set Up Your PIN</h2>
-      <p class="pin-subtitle">Create a 4-6 digit PIN to secure your archives</p>
+      <div class="pin-badge pin-badge-setup">🔐 FIRST TIME SETUP</div>
+      <div class="pin-icon">🆕</div>
+      <h2>Create Your PIN</h2>
+      <p class="pin-subtitle">Step 1 of 2: Choose a 4-6 digit PIN to secure your data</p>
       
       <div class="pin-display">
         <div class="pin-dot" id="setup-dot-1"></div>
@@ -49,9 +50,10 @@
   <!-- PIN Confirm Screen (First Time) -->
   <div id="pin-confirm-screen" class="pin-screen hidden">
     <div class="pin-container">
-      <div class="pin-icon">🔐</div>
+      <div class="pin-badge pin-badge-setup">🔐 FIRST TIME SETUP</div>
+      <div class="pin-icon">✅</div>
       <h2>Confirm Your PIN</h2>
-      <p class="pin-subtitle">Enter the same PIN again to confirm</p>
+      <p class="pin-subtitle">Step 2 of 2: Enter the same PIN again to verify</p>
       
       <div class="pin-display">
         <div class="pin-dot" id="confirm-dot-1"></div>
@@ -88,9 +90,10 @@
   <!-- PIN Unlock Screen (Returning User) -->
   <div id="pin-unlock-screen" class="pin-screen">
     <div class="pin-container">
+      <div class="pin-badge pin-badge-return">🔓 WELCOME BACK</div>
       <div class="pin-icon">🔒</div>
-      <h2>ChatGPT Archive</h2>
-      <p class="pin-subtitle">Enter your 4-6 digit PIN</p>
+      <h2>Unlock Archive</h2>
+      <p class="pin-subtitle">Enter your PIN to access your encrypted data</p>
       
       <div class="pin-display">
         <div class="pin-dot" id="unlock-dot-1"></div>
