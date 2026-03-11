@@ -4,7 +4,7 @@
  * Combines browser.storage.local with pako compression and AES encryption
  */
 
-import { compress, decompress } from 'pako';
+import pako from 'pako';
 import {
   encryptWithPIN,
   decryptWithPIN,
@@ -240,7 +240,7 @@ async function compressAndEncrypt(data: unknown): Promise<EncryptedData> {
   const jsonString = JSON.stringify(data);
   
   // Compress
-  const compressed = compress(stringToUint8Array(jsonString));
+  const compressed = pako.compress(stringToUint8Array(jsonString));
   
   // Encrypt
   const encrypted = await encryptWithKey(uint8ArrayToBase64(compressed), storageContext.dataKey);
@@ -261,7 +261,7 @@ async function decryptAndDecompress(encrypted: EncryptedData): Promise<unknown> 
   
   // Decompress
   const compressed = base64ToUint8Array(decryptedBase64);
-  const decompressed = decompress(compressed);
+  const decompressed = pako.decompress(compressed);
   
   // Parse JSON
   return JSON.parse(uint8ArrayToString(decompressed));

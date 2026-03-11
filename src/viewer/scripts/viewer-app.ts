@@ -7,6 +7,13 @@
 
 import { Conversation } from '@/utils/types';
 import {
+  isArchiveInitialized,
+  initializeArchive,
+  unlockArchive,
+  getConversations,
+  lockArchive
+} from '@/utils/storage';
+import {
   cleanContent,
   listConversations,
   peekConversation,
@@ -43,6 +50,8 @@ interface ViewerState {
   viewMode: 'list' | 'detail' | 'analysis' | 'search';
   analysisTab: 'overview' | 'heatmap' | 'topics' | 'models' | 'pii';
   isUnlocked: boolean;
+  isInitialized: boolean;
+  setupPin: string;
 }
 
 const state: ViewerState = {
@@ -53,7 +62,9 @@ const state: ViewerState = {
   searchQuery: '',
   viewMode: 'list',
   analysisTab: 'overview',
-  isUnlocked: false
+  isUnlocked: false,
+  isInitialized: false,
+  setupPin: ''
 };
 
 // DOM Elements cache
@@ -62,9 +73,13 @@ const elements: { [key: string]: HTMLElement | null } = {};
 /**
  * Initialize the viewer app
  */
-export function initViewerApp() {
+export async function initViewerApp() {
+  console.log('[ChatGPT Archive Viewer] Initializing...');
+  
   // Cache DOM elements
-  elements.pinScreen = document.getElementById('pin-screen');
+  elements.pinSetupScreen = document.getElementById('pin-setup-screen');
+  elements.pinConfirmScreen = document.getElementById('pin-confirm-screen');
+  elements.pinUnlockScreen = document.getElementById('pin-unlock-screen');
   elements.app = document.getElementById('app');
   elements.conversationList = document.getElementById('conversation-list');
   elements.searchInput = document.getElementById('search-input') as HTMLInputElement;
@@ -72,64 +87,215 @@ export function initViewerApp() {
   elements.analysisView = document.getElementById('analysis-view');
   elements.statsContainer = document.getElementById('stats-container');
   
-  // Setup PIN screen
-  setupPinScreen();
-  
-  // Setup search
-  setupSearch();
-  
-  // Setup navigation
-  setupNavigation();
-  
-  // Load conversations from storage
+  // Check if archive is initialized
+  try {
+    state.isInitialized = await isArchiveInitialized();
+    console.log('[ChatGPT Archive Viewer] Archive initialized:', state.isInitialized);
+    
+    if (!state.isInitialized) {
+      // Show PIN setup for first-time users
+      showPinSetup();
+    } else {
+      // Show PIN unlock for returning users
+      showPinUnlock();
+    }
+    
+    // Setup PIN handlers
+    setupPinHandlers();
+    
+    // Setup search
+    setupSearch();
+    
+    // Setup navigation
+    setupNavigation();
+    
+  } catch (error) {
+    console.error('[ChatGPT Archive Viewer] Initialization error:', error);
+    showPinSetup();
+  }
+}
+
+/**
+ * Show PIN setup screen (first-time user)
+ */
+function showPinSetup() {
+  elements.pinSetupScreen?.classList.remove('hidden');
+  elements.pinConfirmScreen?.classList.add('hidden');
+  elements.pinUnlockScreen?.classList.add('hidden');
+  elements.app?.classList.add('hidden');
+  state.setupPin = '';
+  updatePinDisplay('setup', '');
+}
+
+/**
+ * Show PIN confirm screen
+ */
+function showPinConfirm() {
+  elements.pinSetupScreen?.classList.add('hidden');
+  elements.pinConfirmScreen?.classList.remove('hidden');
+  elements.pinUnlockScreen?.classList.add('hidden');
+  elements.app?.classList.add('hidden');
+  updatePinDisplay('confirm', '');
+}
+
+/**
+ * Show PIN unlock screen (returning user)
+ */
+function showPinUnlock() {
+  elements.pinSetupScreen?.classList.add('hidden');
+  elements.pinConfirmScreen?.classList.add('hidden');
+  elements.pinUnlockScreen?.classList.remove('hidden');
+  elements.app?.classList.add('hidden');
+  updatePinDisplay('unlock', '');
+}
+
+/**
+ * Show main app
+ */
+function showApp() {
+  elements.pinSetupScreen?.classList.add('hidden');
+  elements.pinConfirmScreen?.classList.add('hidden');
+  elements.pinUnlockScreen?.classList.add('hidden');
+  elements.app?.classList.remove('hidden');
+  state.isUnlocked = true;
   loadConversations();
 }
 
 /**
- * Setup PIN screen handlers
+ * Setup PIN keypad handlers
  */
-function setupPinScreen() {
-  const pinKeys = document.querySelectorAll('.pin-key');
-  let currentPin = '';
+function setupPinHandlers() {
+  const keys = document.querySelectorAll('.pin-key');
   
-  pinKeys.forEach(key => {
+  keys.forEach(key => {
     key.addEventListener('click', () => {
       const keyValue = key.getAttribute('data-key');
+      const screen = key.getAttribute('data-screen');
       
-      if (keyValue === 'clear') {
-        currentPin = '';
-        updatePinDisplay(currentPin);
-      } else if (keyValue === 'enter') {
-        verifyPin(currentPin);
-      } else {
-        if (currentPin.length < 4) {
-          currentPin += keyValue;
-          updatePinDisplay(currentPin);
-        }
-      }
+      handlePinKey(keyValue, screen);
     });
   });
-}
-
-function updatePinDisplay(pin: string) {
-  const dots = document.querySelectorAll('.pin-dot');
-  dots.forEach((dot, i) => {
-    dot.classList.toggle('filled', i < pin.length);
+  
+  // Back button for confirm screen
+  const backBtn = document.getElementById('btn-back-to-setup');
+  backBtn?.addEventListener('click', () => {
+    state.setupPin = '';
+    showPinSetup();
   });
 }
 
-async function verifyPin(pin: string) {
-  // In production, this would verify against stored hash
-  // For demo, using simple PIN
-  if (pin === '1234') {
-    state.isUnlocked = true;
-    elements.pinScreen?.classList.add('hidden');
-    elements.app?.classList.remove('hidden');
-    await loadConversations();
-  } else {
-    const error = document.getElementById('pin-error');
-    if (error) error.textContent = 'Incorrect PIN';
-    updatePinDisplay('');
+// PIN entry state
+const pinEntry = {
+  setup: '',
+  confirm: '',
+  unlock: ''
+};
+
+/**
+ * Handle PIN key press
+ */
+function handlePinKey(keyValue: string | null, screen: string | null) {
+  if (!screen) return;
+  
+  const screenKey = screen as keyof typeof pinEntry;
+  
+  if (keyValue === 'clear') {
+    pinEntry[screenKey] = '';
+    updatePinDisplay(screen, '');
+    clearError(screen);
+  } else if (keyValue === 'enter') {
+    handlePinSubmit(screen);
+  } else if (keyValue && pinEntry[screenKey].length < 4) {
+    pinEntry[screenKey] += keyValue;
+    updatePinDisplay(screen, pinEntry[screenKey]);
+    
+    // Auto-submit when 4 digits entered
+    if (pinEntry[screenKey].length === 4) {
+      setTimeout(() => handlePinSubmit(screen), 200);
+    }
+  }
+}
+
+/**
+ * Update PIN dot display
+ */
+function updatePinDisplay(screen: string, pin: string) {
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById(`${screen}-dot-${i}`);
+    if (dot) {
+      dot.classList.toggle('filled', i <= pin.length);
+    }
+  }
+}
+
+/**
+ * Clear error message
+ */
+function clearError(screen: string) {
+  const errorEl = document.getElementById(`${screen}-pin-error`);
+  if (errorEl) errorEl.textContent = '';
+}
+
+/**
+ * Show error message
+ */
+function showError(screen: string, message: string) {
+  const errorEl = document.getElementById(`${screen}-pin-error`);
+  if (errorEl) errorEl.textContent = message;
+}
+
+/**
+ * Handle PIN submission
+ */
+async function handlePinSubmit(screen: string) {
+  const pin = pinEntry[screen as keyof typeof pinEntry];
+  
+  if (pin.length !== 4) {
+    showError(screen, 'Please enter 4 digits');
+    return;
+  }
+  
+  if (screen === 'setup') {
+    // Store PIN and go to confirm
+    state.setupPin = pin;
+    pinEntry.setup = '';
+    pinEntry.confirm = '';
+    showPinConfirm();
+  } else if (screen === 'confirm') {
+    // Check if PINs match
+    if (pin === state.setupPin) {
+      // Initialize archive with PIN
+      try {
+        await initializeArchive(pin);
+        console.log('[ChatGPT Archive Viewer] Archive initialized');
+        pinEntry.confirm = '';
+        showApp();
+      } catch (error) {
+        console.error('[ChatGPT Archive Viewer] Failed to initialize:', error);
+        showError('confirm', 'Failed to set up. Please try again.');
+      }
+    } else {
+      showError('confirm', 'PINs do not match. Please try again.');
+      pinEntry.confirm = '';
+      updatePinDisplay('confirm', '');
+    }
+  } else if (screen === 'unlock') {
+    // Verify PIN against stored hash
+    try {
+      const isValid = await unlockArchive(pin);
+      if (isValid) {
+        console.log('[ChatGPT Archive Viewer] PIN verified');
+        pinEntry.unlock = '';
+        showApp();
+      } else {
+        showError('unlock', 'Incorrect PIN. Please try again.');
+        pinEntry.unlock = '';
+        updatePinDisplay('unlock', '');
+      }
+    } catch (error) {
+      console.error('[ChatGPT Archive Viewer] PIN verification error:', error);
+      showError('unlock', 'Error verifying PIN. Please try again.');
+    }
   }
 }
 
@@ -138,17 +304,36 @@ async function verifyPin(pin: string) {
  */
 async function loadConversations() {
   try {
-    // In production, load from encrypted storage
-    // For demo, check if there's data in storage
-    const result = await browser.storage.local.get('lastBackupData');
-    if (result.lastBackupData) {
-      state.conversations = result.lastBackupData;
-      state.filteredConversations = [...state.conversations];
-      renderConversationList();
-      updateStats();
+    console.log('[ChatGPT Archive Viewer] Loading conversations...');
+    state.conversations = await getConversations();
+    state.filteredConversations = [...state.conversations];
+    renderConversationList();
+    updateStats();
+    
+    if (state.conversations.length === 0) {
+      showEmptyState();
     }
   } catch (error) {
-    console.error('Failed to load conversations:', error);
+    console.error('[ChatGPT Archive Viewer] Failed to load conversations:', error);
+    // If decryption fails, lock and show unlock screen
+    lockArchive();
+    showPinUnlock();
+    showError('unlock', 'Failed to decrypt data. Please enter PIN again.');
+  }
+}
+
+/**
+ * Show empty state when no conversations
+ */
+function showEmptyState() {
+  if (elements.conversationList) {
+    elements.conversationList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <h3>No Conversations Yet</h3>
+        <p>Go to chatgpt.com and click "New Backup" to save your conversations.</p>
+      </div>
+    `;
   }
 }
 
@@ -176,12 +361,60 @@ function performSearch(query: string) {
 }
 
 /**
+ * Setup navigation
+ */
+function setupNavigation() {
+  // Advanced search button
+  const btnAdvanced = document.getElementById('btn-advanced-search');
+  btnAdvanced?.addEventListener('click', showAdvancedSearch);
+  
+  // Analytics button
+  const btnAnalytics = document.getElementById('btn-global-analysis');
+  btnAnalytics?.addEventListener('click', showAnalytics);
+  
+  // Export CSV button
+  const btnExport = document.getElementById('btn-export-csv');
+  btnExport?.addEventListener('click', exportToCSV);
+}
+
+function showAdvancedSearch() {
+  // TODO: Implement advanced search UI
+  alert('Advanced search coming soon!');
+}
+
+function showAnalytics() {
+  // TODO: Implement analytics view
+  alert('Analytics coming soon!');
+}
+
+function exportToCSV() {
+  if (state.conversations.length === 0) {
+    alert('No conversations to export');
+    return;
+  }
+  
+  const csv = exportManifestCSV(state.conversations);
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `chatgpt-archive-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/**
  * Render conversation list
  */
 function renderConversationList(searchResults?: Array<{ index: number; title: string; score?: number }>) {
   if (!elements.conversationList) return;
   
   const items = searchResults || state.filteredConversations.map((c, i) => ({ index: i, title: c.title }));
+  
+  if (items.length === 0) {
+    elements.conversationList.innerHTML = '<div class="no-results">No conversations found</div>';
+    return;
+  }
   
   elements.conversationList.innerHTML = items.map(item => {
     const conv = state.conversations[item.index];
@@ -206,392 +439,72 @@ function renderConversationList(searchResults?: Array<{ index: number; title: st
   // Add click handlers
   elements.conversationList.querySelectorAll('.conversation-item').forEach(item => {
     item.addEventListener('click', () => {
-      const index = parseInt(item.getAttribute('data-index') || '-1');
+      const index = parseInt(item.getAttribute('data-index') || '0');
       selectConversation(index);
     });
   });
 }
 
-/**
- * Select a conversation to view
- */
 function selectConversation(index: number) {
   state.selectedIndex = index;
   state.selectedConversation = state.conversations[index];
-  state.viewMode = 'detail';
-  
   renderDetailView();
-  updateActiveItem();
 }
 
-function updateActiveItem() {
-  document.querySelectorAll('.conversation-item').forEach(item => {
-    item.classList.toggle('active', parseInt(item.getAttribute('data-index') || '-1') === state.selectedIndex);
-  });
-}
-
-/**
- * Render detail view
- */
 function renderDetailView() {
-  if (!state.selectedConversation || !elements.detailView) return;
-  
   const conv = state.selectedConversation;
-  const peek = peekConversation(conv);
-  const dialogue = getDialogue(conv);
-  const toc = getTableOfContents(conv);
+  if (!conv || !elements.detailView) return;
+  
+  document.getElementById('empty-state')?.classList.add('hidden');
+  elements.detailView.classList.remove('hidden');
+  
+  const date = new Date(conv.create_time).toLocaleString();
   
   elements.detailView.innerHTML = `
     <div class="detail-header">
       <h2>${escapeHtml(conv.title)}</h2>
-      <div class="detail-actions">
-        <button id="btn-analysis">📊 Analysis</button>
-        <button id="btn-export-html">📄 Export HTML</button>
-        <button id="btn-close-detail">✕</button>
+      <div class="detail-meta">
+        <span>📅 ${date}</span>
+        <span>💬 ${conv.messages?.length || 0} messages</span>
       </div>
     </div>
-    
-    <div class="detail-meta">
-      <span>📅 ${new Date(conv.create_time).toLocaleString()}</span>
-      <span>💬 ${peek.messageCount} messages</span>
-      <span>🔤 ~${peek.estimatedTokens} tokens</span>
-    </div>
-    
-    <div class="detail-tabs">
-      <button class="tab-btn active" data-tab="dialogue">Dialogue</button>
-      <button class="tab-btn" data-tab="toc">Contents</button>
-      <button class="tab-btn" data-tab="stats">Stats</button>
-      <button class="tab-btn" data-tab="code">Code</button>
-      <button class="tab-btn" data-tab="urls">URLs</button>
-    </div>
-    
-    <div class="detail-content">
-      <div id="tab-dialogue" class="tab-panel active">
-        ${dialogue.map(d => `
-          <div class="message ${d.role}">
-            <div class="message-header">${d.role === 'user' ? '👤 You' : '🤖 Assistant'} (Turn ${d.turn})</div>
-            <div class="message-body">${formatMessageContent(d.content)}</div>
-          </div>
-        `).join('')}
-      </div>
-      
-      <div id="tab-toc" class="tab-panel">
-        <h4>Table of Contents</h4>
-        ${toc.map(t => `
-          <div class="toc-item" data-turn="${t.turn}">
-            <span class="toc-turn">Turn ${t.turn}</span>
-            <span class="toc-preview">${escapeHtml(t.preview)}</span>
-          </div>
-        `).join('')}
-      </div>
-      
-      <div id="tab-stats" class="tab-panel">
-        <h4>Turn-by-Turn Statistics</h4>
-        <table class="stats-table">
-          <tr><th>Turn</th><th>Role</th><th>Words</th><th>Chars</th></tr>
-          ${getTurnStats(conv).map(s => `
-            <tr><td>${s.turn}</td><td>${s.role}</td><td>${s.words}</td><td>${s.chars}</td></tr>
-          `).join('')}
-        </table>
-      </div>
-      
-      <div id="tab-code" class="tab-panel">
-        <h4>Extracted Code Blocks</h4>
-        ${extractCodeBlocks(conv).map((code, i) => `
-          <div class="code-block">
-            <div class="code-header">Block ${i + 1}</div>
-            <pre><code>${escapeHtml(code)}</code></pre>
-          </div>
-        `).join('') || '<p>No code blocks found</p>'}
-      </div>
-      
-      <div id="tab-urls" class="tab-panel">
-        <h4>Extracted URLs</h4>
-        ${extractURLs(conv).map(url => `
-          <a href="${url}" target="_blank" class="url-link">${url}</a>
-        `).join('') || '<p>No URLs found</p>'}
-      </div>
-    </div>
-  `;
-  
-  // Setup tab handlers
-  elements.detailView.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.getAttribute('data-tab');
-      switchTab(tab || 'dialogue');
-    });
-  });
-  
-  // Setup action handlers
-  document.getElementById('btn-analysis')?.addEventListener('click', showAnalysis);
-  document.getElementById('btn-export-html')?.addEventListener('click', () => exportConversationHTML(conv));
-  document.getElementById('btn-close-detail')?.addEventListener('click', () => {
-    state.viewMode = 'list';
-    elements.detailView?.classList.add('hidden');
-  });
-  
-  elements.detailView.classList.remove('hidden');
-}
-
-function switchTab(tab: string) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tab));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${tab}`));
-}
-
-/**
- * Show analysis view
- */
-function showAnalysis() {
-  state.viewMode = 'analysis';
-  renderAnalysisView();
-}
-
-function renderAnalysisView() {
-  if (!elements.analysisView) return;
-  
-  const stats = getStats(state.conversations);
-  
-  elements.analysisView.innerHTML = `
-    <div class="analysis-header">
-      <h2>📊 Archive Analytics</h2>
-      <button id="btn-close-analysis">✕</button>
-    </div>
-    
-    <div class="analysis-tabs">
-      <button class="analysis-tab active" data-tab="overview">Overview</button>
-      <button class="analysis-tab" data-tab="heatmap">Activity</button>
-      <button class="analysis-tab" data-tab="topics">Topics</button>
-      <button class="analysis-tab" data-tab="models">Models</button>
-      <button class="analysis-tab" data-tab="pii">PII Scan</button>
-    </div>
-    
-    <div class="analysis-content">
-      <div id="analysis-overview" class="analysis-panel active">
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-value">${stats.totalChats}</div>
-            <div class="stat-label">Total Chats</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.totalMessages}</div>
-            <div class="stat-label">Messages</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.totalWords.toLocaleString()}</div>
-            <div class="stat-label">Words</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.averageMessagesPerChat}</div>
-            <div class="stat-label">Avg Msgs/Chat</div>
-          </div>
-        </div>
-        <div class="date-range">
-          📅 ${stats.dateRange.start} → ${stats.dateRange.end}
-        </div>
-      </div>
-      
-      <div id="analysis-heatmap" class="analysis-panel">
-        <h4>Monthly Activity</h4>
-        <div class="heatmap">
-          ${Object.entries(getMonthlyHeatmap(state.conversations)).map(([month, count]) => `
-            <div class="heatmap-row">
-              <span class="heatmap-label">${month}</span>
-              <div class="heatmap-bar" style="width: ${Math.min(count * 10, 300)}px; background: ${getHeatColor(count)}"></div>
-              <span class="heatmap-count">${count}</span>
-            </div>
-          `).join('')}
-        </div>
-        
-        <h4>Hourly Activity (24h Clock)</h4>
-        <div class="clock-chart">
-          ${getHourlyClock(state.conversations).map((count, hour) => `
-            <div class="clock-bar" style="height: ${Math.max(count * 2, 5)}px;" title="${hour}:00 - ${count} chats"></div>
-          `).join('')}
-        </div>
-        <div class="clock-labels">
-          ${[0, 6, 12, 18].map(h => `<span>${h}:00</span>`).join('')}
-        </div>
-      </div>
-      
-      <div id="analysis-topics" class="analysis-panel">
-        <h4>Top Topics (from titles)</h4>
-        <div class="topics-list">
-          ${getTopTopics(state.conversations, 20).map((t, i) => `
-            <div class="topic-item">
-              <span class="topic-rank">${i + 1}</span>
-              <span class="topic-word">${t.word}</span>
-              <div class="topic-bar" style="width: ${t.count * 5}px"></div>
-              <span class="topic-count">${t.count}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      
-      <div id="analysis-models" class="analysis-panel">
-        <h4>Model Usage</h4>
-        <div class="models-list">
-          ${getModelUsage(state.conversations).map(m => `
-            <div class="model-item">
-              <span class="model-name">${m.model}</span>
-              <div class="model-bar" style="width: ${Math.min(m.count, 200)}px"></div>
-              <span class="model-count">${m.count} msgs</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-      
-      <div id="analysis-pii" class="analysis-panel">
-        <h4>PII Security Scan</h4>
-        <p>Scanning all conversations for emails, IPs, phone numbers, and API keys...</p>
-        <button id="btn-run-pii-scan" class="btn-primary">Run Full Scan</button>
-        <div id="pii-results"></div>
-      </div>
-    </div>
-  `;
-  
-  // Setup handlers
-  document.getElementById('btn-close-analysis')?.addEventListener('click', () => {
-    elements.analysisView?.classList.add('hidden');
-  });
-  
-  document.getElementById('btn-run-pii-scan')?.addEventListener('click', runPIIScan);
-  
-  elements.analysisView.querySelectorAll('.analysis-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabName = tab.getAttribute('data-tab');
-      switchAnalysisTab(tabName || 'overview');
-    });
-  });
-  
-  elements.analysisView.classList.remove('hidden');
-}
-
-function switchAnalysisTab(tab: string) {
-  document.querySelectorAll('.analysis-tab').forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === tab));
-  document.querySelectorAll('.analysis-panel').forEach(p => p.classList.toggle('active', p.id === `analysis-${tab}`));
-}
-
-async function runPIIScan() {
-  const resultsDiv = document.getElementById('pii-results');
-  if (!resultsDiv) return;
-  
-  resultsDiv.innerHTML = '<p>Scanning...</p>';
-  
-  const allFindings: Array<{ convIndex: number; title: string; findings: ReturnType<typeof scanPII> }> = [];
-  
-  state.conversations.forEach((conv, i) => {
-    const findings = scanPII(conv);
-    if (findings.length > 0) {
-      allFindings.push({ convIndex: i, title: conv.title, findings });
-    }
-  });
-  
-  if (allFindings.length === 0) {
-    resultsDiv.innerHTML = '<p class="pii-safe">✅ No PII detected in any conversation</p>';
-  } else {
-    resultsDiv.innerHTML = `
-      <p class="pii-warning">⚠️ Found PII in ${allFindings.length} conversations:</p>
-      ${allFindings.map(f => `
-        <div class="pii-conv">
-          <h5>${escapeHtml(f.title)}</h5>
-          ${f.findings.map(finding => `
-            <div class="pii-finding">
-              <span class="pii-type">${finding.type}</span>
-              <span class="pii-turn">Turn ${finding.turn}</span>
-              <span class="pii-matches">${finding.matches.length} matches</span>
-            </div>
-          `).join('')}
+    <div class="detail-messages">
+      ${(conv.messages || []).map(msg => `
+        <div class="message ${msg.role}">
+          <div class="message-role">${msg.role === 'user' ? '👤 User' : '🤖 Assistant'}</div>
+          <div class="message-content">${formatContent(msg.content)}</div>
         </div>
       `).join('')}
-    `;
-  }
-}
-
-/**
- * Update global stats display
- */
-function updateStats() {
-  if (!elements.statsContainer || state.conversations.length === 0) return;
-  
-  const stats = getStats(state.conversations);
-  elements.statsContainer.innerHTML = `
-    <span>📊 ${stats.totalChats} chats</span>
-    <span>💬 ${stats.totalMessages} msgs</span>
-    <span>🔤 ${stats.totalWords.toLocaleString()} words</span>
+    </div>
   `;
 }
 
-/**
- * Export conversation to HTML
- */
-function exportConversationHTML(conv: Conversation) {
-  const html = exportToHTML(conv);
-  const blob = new Blob([html], { type: 'text/html' });
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${conv.title.replace(/[^a-z0-9]/gi, '_')}.html`;
-  a.click();
-  
-  URL.revokeObjectURL(url);
+function formatContent(content: string): string {
+  return escapeHtml(content)
+    .replace(/```(\w+)?\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
 }
 
-/**
- * Setup navigation handlers
- */
-function setupNavigation() {
-  // Advanced search button
-  document.getElementById('btn-advanced-search')?.addEventListener('click', showAdvancedSearch);
-  
-  // Analysis button
-  document.getElementById('btn-global-analysis')?.addEventListener('click', showAnalysis);
-  
-  // Export CSV button
-  document.getElementById('btn-export-csv')?.addEventListener('click', exportCSV);
-}
-
-function showAdvancedSearch() {
-  // Implement advanced search modal with regex, date range, role filters
-  alert('Advanced Search: Use regex patterns like /code|script/i or date ranges YYYY-MM-DD to YYYY-MM-DD');
-}
-
-function exportCSV() {
-  const csv = exportManifestCSV(state.conversations);
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `chatgpt-archive-manifest-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  
-  URL.revokeObjectURL(url);
-}
-
-// Utility functions
 function escapeHtml(text: string): string {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
 }
 
-function formatMessageContent(content: string): string {
-  // Format code blocks
-  let formatted = escapeHtml(content);
-  formatted = formatted.replace(/```(\w+)?\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
-  formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
-  formatted = formatted.replace(/\n/g, '<br>');
-  return formatted;
-}
-
-function getHeatColor(count: number): string {
-  if (count < 5) return '#e3f2fd';
-  if (count < 15) return '#90caf9';
-  if (count < 30) return '#42a5f5';
-  if (count < 50) return '#1e88e5';
-  return '#1565c0';
+function updateStats() {
+  if (!elements.statsContainer) return;
+  
+  const total = state.conversations.length;
+  const totalMessages = state.conversations.reduce((sum, c) => sum + (c.messages?.length || 0), 0);
+  
+  elements.statsContainer.innerHTML = `
+    <span>📚 ${total} conversations</span>
+    <span>💬 ${totalMessages} messages</span>
+  `;
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', initViewerApp);
+document.addEventListener('DOMContentLoaded', () => {
+  initViewerApp().catch(console.error);
+});

@@ -1,6 +1,7 @@
 // Popup script for ChatGPT Backup Extension
 
 import type { BackupProgress, BackupResult, Conversation } from '../utils/types';
+import { isArchiveInitialized } from '@/utils/storage';
 
 // DOM Elements
 const statusSection = document.getElementById('status-section')!;
@@ -75,6 +76,9 @@ async function init() {
   
   // Listen for messages from content script
   browser.runtime.onMessage.addListener(handleMessage);
+  
+  // Check if archive is initialized and show guidance
+  await checkArchiveStatus();
 }
 
 async function loadSettings() {
@@ -597,6 +601,28 @@ function getDateFormat(date: Date): string {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   
   return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+}
+
+async function checkArchiveStatus() {
+  try {
+    const initialized = await isArchiveInitialized();
+    if (!initialized) {
+      // Show PIN setup guidance
+      const statusSection = document.getElementById('status-section');
+      if (statusSection) {
+        const pinNotice = document.createElement('div');
+        pinNotice.className = 'pin-notice';
+        pinNotice.innerHTML = `
+          <div class="pin-notice-content">
+            <strong>🔐 First time?</strong> Click "Open Archive" to set up your PIN.
+          </div>
+        `;
+        statusSection.appendChild(pinNotice);
+      }
+    }
+  } catch (error) {
+    console.error('[ChatGPT Backup Popup] Error checking archive status:', error);
+  }
 }
 
 // Run init

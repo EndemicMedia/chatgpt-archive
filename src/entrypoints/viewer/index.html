@@ -9,35 +9,107 @@
   <link rel="stylesheet" href="./styles/analysis.css">
 </head>
 <body>
-  <!-- PIN Lock Screen -->
-  <div id="pin-screen" class="pin-screen">
+  <!-- PIN Setup Screen (First Time) -->
+  <div id="pin-setup-screen" class="pin-screen hidden">
+    <div class="pin-container">
+      <div class="pin-icon">🔐</div>
+      <h2>Set Up Your PIN</h2>
+      <p class="pin-subtitle">Create a 4-digit PIN to secure your archives</p>
+      
+      <div class="pin-display">
+        <div class="pin-dot" id="setup-dot-1"></div>
+        <div class="pin-dot" id="setup-dot-2"></div>
+        <div class="pin-dot" id="setup-dot-3"></div>
+        <div class="pin-dot" id="setup-dot-4"></div>
+      </div>
+      
+      <div class="pin-error" id="setup-pin-error"></div>
+      
+      <div class="pin-keypad">
+        <button class="pin-key" data-key="1" data-screen="setup">1</button>
+        <button class="pin-key" data-key="2" data-screen="setup">2</button>
+        <button class="pin-key" data-key="3" data-screen="setup">3</button>
+        <button class="pin-key" data-key="4" data-screen="setup">4</button>
+        <button class="pin-key" data-key="5" data-screen="setup">5</button>
+        <button class="pin-key" data-key="6" data-screen="setup">6</button>
+        <button class="pin-key" data-key="7" data-screen="setup">7</button>
+        <button class="pin-key" data-key="8" data-screen="setup">8</button>
+        <button class="pin-key" data-key="9" data-screen="setup">9</button>
+        <button class="pin-key pin-key-clear" data-key="clear" data-screen="setup">C</button>
+        <button class="pin-key" data-key="0" data-screen="setup">0</button>
+        <button class="pin-key pin-key-enter" data-key="enter" data-screen="setup">✓</button>
+      </div>
+      
+      <p class="pin-hint">🔒 Your PIN encrypts data locally on your device</p>
+    </div>
+  </div>
+
+  <!-- PIN Confirm Screen (First Time) -->
+  <div id="pin-confirm-screen" class="pin-screen hidden">
+    <div class="pin-container">
+      <div class="pin-icon">🔐</div>
+      <h2>Confirm Your PIN</h2>
+      <p class="pin-subtitle">Enter the same PIN again to confirm</p>
+      
+      <div class="pin-display">
+        <div class="pin-dot" id="confirm-dot-1"></div>
+        <div class="pin-dot" id="confirm-dot-2"></div>
+        <div class="pin-dot" id="confirm-dot-3"></div>
+        <div class="pin-dot" id="confirm-dot-4"></div>
+      </div>
+      
+      <div class="pin-error" id="confirm-pin-error"></div>
+      
+      <div class="pin-keypad">
+        <button class="pin-key" data-key="1" data-screen="confirm">1</button>
+        <button class="pin-key" data-key="2" data-screen="confirm">2</button>
+        <button class="pin-key" data-key="3" data-screen="confirm">3</button>
+        <button class="pin-key" data-key="4" data-screen="confirm">4</button>
+        <button class="pin-key" data-key="5" data-screen="confirm">5</button>
+        <button class="pin-key" data-key="6" data-screen="confirm">6</button>
+        <button class="pin-key" data-key="7" data-screen="confirm">7</button>
+        <button class="pin-key" data-key="8" data-screen="confirm">8</button>
+        <button class="pin-key" data-key="9" data-screen="confirm">9</button>
+        <button class="pin-key pin-key-clear" data-key="clear" data-screen="confirm">C</button>
+        <button class="pin-key" data-key="0" data-screen="confirm">0</button>
+        <button class="pin-key pin-key-enter" data-key="enter" data-screen="confirm">✓</button>
+      </div>
+      
+      <button class="pin-back-btn" id="btn-back-to-setup">← Back</button>
+      
+      <p class="pin-hint">🔒 This PIN will be required to access your data</p>
+    </div>
+  </div>
+
+  <!-- PIN Unlock Screen (Returning User) -->
+  <div id="pin-unlock-screen" class="pin-screen">
     <div class="pin-container">
       <div class="pin-icon">🔒</div>
       <h2>ChatGPT Archive</h2>
       <p class="pin-subtitle">Enter PIN to access your archives</p>
       
       <div class="pin-display">
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
-        <div class="pin-dot"></div>
+        <div class="pin-dot" id="unlock-dot-1"></div>
+        <div class="pin-dot" id="unlock-dot-2"></div>
+        <div class="pin-dot" id="unlock-dot-3"></div>
+        <div class="pin-dot" id="unlock-dot-4"></div>
       </div>
       
-      <div class="pin-error" id="pin-error"></div>
+      <div class="pin-error" id="unlock-pin-error"></div>
       
       <div class="pin-keypad">
-        <button class="pin-key" data-key="1">1</button>
-        <button class="pin-key" data-key="2">2</button>
-        <button class="pin-key" data-key="3">3</button>
-        <button class="pin-key" data-key="4">4</button>
-        <button class="pin-key" data-key="5">5</button>
-        <button class="pin-key" data-key="6">6</button>
-        <button class="pin-key" data-key="7">7</button>
-        <button class="pin-key" data-key="8">8</button>
-        <button class="pin-key" data-key="9">9</button>
-        <button class="pin-key pin-key-clear" data-key="clear">C</button>
-        <button class="pin-key" data-key="0">0</button>
-        <button class="pin-key pin-key-enter" data-key="enter">✓</button>
+        <button class="pin-key" data-key="1" data-screen="unlock">1</button>
+        <button class="pin-key" data-key="2" data-screen="unlock">2</button>
+        <button class="pin-key" data-key="3" data-screen="unlock">3</button>
+        <button class="pin-key" data-key="4" data-screen="unlock">4</button>
+        <button class="pin-key" data-key="5" data-screen="unlock">5</button>
+        <button class="pin-key" data-key="6" data-screen="unlock">6</button>
+        <button class="pin-key" data-key="7" data-screen="unlock">7</button>
+        <button class="pin-key" data-key="8" data-screen="unlock">8</button>
+        <button class="pin-key" data-key="9" data-screen="unlock">9</button>
+        <button class="pin-key pin-key-clear" data-key="clear" data-screen="unlock">C</button>
+        <button class="pin-key" data-key="0" data-screen="unlock">0</button>
+        <button class="pin-key pin-key-enter" data-key="enter" data-screen="unlock">✓</button>
       </div>
       
       <p class="pin-hint">🔐 Data is encrypted locally on your device</p>
