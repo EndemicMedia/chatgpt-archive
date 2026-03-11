@@ -220,7 +220,7 @@ function handlePinKey(keyValue: string | null, screen: string | null) {
  * Update PIN dot display
  */
 function updatePinDisplay(screen: string, pin: string) {
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= 6; i++) {
     const dot = document.getElementById(`${screen}-dot-${i}`);
     if (dot) {
       dot.classList.toggle('filled', i <= pin.length);
@@ -250,8 +250,8 @@ function showError(screen: string, message: string) {
 async function handlePinSubmit(screen: string) {
   const pin = pinEntry[screen as keyof typeof pinEntry];
   
-  if (pin.length !== 4) {
-    showError(screen, 'Please enter 4 digits');
+  if (pin.length < 4 || pin.length > 6) {
+    showError(screen, 'Please enter 4-6 digits');
     return;
   }
   
