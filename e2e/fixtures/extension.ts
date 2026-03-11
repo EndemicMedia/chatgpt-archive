@@ -12,6 +12,7 @@ import fs from 'fs';
 // Find the extension build directory
 function findExtensionPath(): string {
   const possiblePaths = [
+    path.join(__dirname, '../../.output/chrome-mv3'),
     path.join(__dirname, '../../.output/chrome-mv3-dev'),
     path.join(__dirname, '../../.output/chrome-mv3-prod'),
     path.join(__dirname, '../../dist'),
