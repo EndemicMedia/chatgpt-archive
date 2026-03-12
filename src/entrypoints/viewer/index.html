@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ChatGPT Archive - Secure Viewer</title>
-  <link rel="stylesheet" href="./styles/viewer.css">
   <link rel="stylesheet" href="./styles/themes.css">
+  <link rel="stylesheet" href="./styles/viewer.css">
   <link rel="stylesheet" href="./styles/analysis.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
       <div class="pin-icon">🆕</div>
       <h2>Create Your PIN</h2>
       <p class="pin-subtitle">Step 1 of 2: Choose a 4-6 digit PIN to secure your data</p>
-      
+
       <div class="pin-display">
         <div class="pin-dot" id="setup-dot-1"></div>
         <div class="pin-dot" id="setup-dot-2"></div>
@@ -25,9 +25,9 @@
         <div class="pin-dot" id="setup-dot-5"></div>
         <div class="pin-dot" id="setup-dot-6"></div>
       </div>
-      
+
       <div class="pin-error" id="setup-pin-error"></div>
-      
+
       <div class="pin-keypad">
         <button class="pin-key" data-key="1" data-screen="setup">1</button>
         <button class="pin-key" data-key="2" data-screen="setup">2</button>
@@ -42,7 +42,7 @@
         <button class="pin-key" data-key="0" data-screen="setup">0</button>
         <button class="pin-key pin-key-enter" data-key="enter" data-screen="setup">✓</button>
       </div>
-      
+
       <p class="pin-hint">🔒 Your PIN encrypts data locally on your device</p>
     </div>
   </div>
@@ -54,7 +54,7 @@
       <div class="pin-icon">✅</div>
       <h2>Confirm Your PIN</h2>
       <p class="pin-subtitle">Step 2 of 2: Enter the same PIN again to verify</p>
-      
+
       <div class="pin-display">
         <div class="pin-dot" id="confirm-dot-1"></div>
         <div class="pin-dot" id="confirm-dot-2"></div>
@@ -63,9 +63,9 @@
         <div class="pin-dot" id="confirm-dot-5"></div>
         <div class="pin-dot" id="confirm-dot-6"></div>
       </div>
-      
+
       <div class="pin-error" id="confirm-pin-error"></div>
-      
+
       <div class="pin-keypad">
         <button class="pin-key" data-key="1" data-screen="confirm">1</button>
         <button class="pin-key" data-key="2" data-screen="confirm">2</button>
@@ -80,9 +80,9 @@
         <button class="pin-key" data-key="0" data-screen="confirm">0</button>
         <button class="pin-key pin-key-enter" data-key="enter" data-screen="confirm">✓</button>
       </div>
-      
+
       <button class="pin-back-btn" id="btn-back-to-setup">← Back</button>
-      
+
       <p class="pin-hint">🔒 This PIN will be required to access your data</p>
     </div>
   </div>
@@ -94,7 +94,7 @@
       <div class="pin-icon">🔒</div>
       <h2>Unlock Archive</h2>
       <p class="pin-subtitle">Enter your PIN to access your encrypted data</p>
-      
+
       <div class="pin-display">
         <div class="pin-dot" id="unlock-dot-1"></div>
         <div class="pin-dot" id="unlock-dot-2"></div>
@@ -103,9 +103,9 @@
         <div class="pin-dot" id="unlock-dot-5"></div>
         <div class="pin-dot" id="unlock-dot-6"></div>
       </div>
-      
+
       <div class="pin-error" id="unlock-pin-error"></div>
-      
+
       <div class="pin-keypad">
         <button class="pin-key" data-key="1" data-screen="unlock">1</button>
         <button class="pin-key" data-key="2" data-screen="unlock">2</button>
@@ -120,8 +120,46 @@
         <button class="pin-key" data-key="0" data-screen="unlock">0</button>
         <button class="pin-key pin-key-enter" data-key="enter" data-screen="unlock">✓</button>
       </div>
-      
+
       <p class="pin-hint">🔐 Data is encrypted locally on your device</p>
+    </div>
+  </div>
+
+  <!-- Change PIN Screen -->
+  <div id="pin-change-screen" class="pin-screen hidden">
+    <div class="pin-container">
+      <div class="pin-badge pin-badge-return">🔑 CHANGE PIN</div>
+      <div class="pin-icon">🔄</div>
+      <h2 id="change-pin-title">Enter Current PIN</h2>
+      <p class="pin-subtitle" id="change-pin-subtitle">Step 1 of 3: Verify your current PIN</p>
+
+      <div class="pin-display">
+        <div class="pin-dot" id="change-dot-1"></div>
+        <div class="pin-dot" id="change-dot-2"></div>
+        <div class="pin-dot" id="change-dot-3"></div>
+        <div class="pin-dot" id="change-dot-4"></div>
+        <div class="pin-dot" id="change-dot-5"></div>
+        <div class="pin-dot" id="change-dot-6"></div>
+      </div>
+
+      <div class="pin-error" id="change-pin-error"></div>
+
+      <div class="pin-keypad">
+        <button class="pin-key" data-key="1" data-screen="change">1</button>
+        <button class="pin-key" data-key="2" data-screen="change">2</button>
+        <button class="pin-key" data-key="3" data-screen="change">3</button>
+        <button class="pin-key" data-key="4" data-screen="change">4</button>
+        <button class="pin-key" data-key="5" data-screen="change">5</button>
+        <button class="pin-key" data-key="6" data-screen="change">6</button>
+        <button class="pin-key" data-key="7" data-screen="change">7</button>
+        <button class="pin-key" data-key="8" data-screen="change">8</button>
+        <button class="pin-key" data-key="9" data-screen="change">9</button>
+        <button class="pin-key pin-key-clear" data-key="clear" data-screen="change">C</button>
+        <button class="pin-key" data-key="0" data-screen="change">0</button>
+        <button class="pin-key pin-key-enter" data-key="enter" data-screen="change">✓</button>
+      </div>
+
+      <button class="pin-back-btn" id="btn-cancel-change-pin">✕ Cancel</button>
     </div>
   </div>
 
@@ -131,22 +169,78 @@
       <!-- Sidebar -->
       <aside class="sidebar">
         <div class="sidebar-header">
-          <h1>📚 ChatGPT Archive</h1>
+          <div class="sidebar-title-row">
+            <h1>📚 ChatGPT Archive</h1>
+            <button id="btn-dark-mode" class="sidebar-dark-btn" title="Toggle dark/light theme">🌙</button>
+          </div>
           <div class="global-stats" id="stats-container">
             <span>Loading...</span>
           </div>
         </div>
-        
+
         <div class="search-container">
           <input type="text" id="search-input" class="search-input" placeholder="Search conversations...">
+          <!-- Advanced filters panel (inline, collapsed by default) -->
+          <div id="advanced-filters" class="advanced-filters hidden">
+            <div class="filter-row">
+              <label>From</label>
+              <input type="date" id="adv-date-from" class="adv-input">
+              <label>To</label>
+              <input type="date" id="adv-date-to" class="adv-input">
+            </div>
+            <div class="filter-row">
+              <label>Search in</label>
+              <select id="adv-role" class="adv-input adv-select">
+                <option value="">All messages</option>
+                <option value="user">My messages</option>
+                <option value="assistant">Assistant replies</option>
+              </select>
+            </div>
+            <div class="filter-row">
+              <label>Min messages</label>
+              <input type="number" id="adv-min-msgs" placeholder="0" min="0" class="adv-input adv-number">
+            </div>
+            <div class="filter-row">
+              <label>Model</label>
+              <select id="adv-model" class="adv-input adv-select">
+                <option value="">All models</option>
+              </select>
+            </div>
+            <div class="filter-row">
+              <label>Hour (0–23)</label>
+              <input type="number" id="adv-hour" placeholder="any" min="0" max="23" class="adv-input adv-number">
+            </div>
+            <div class="filter-actions">
+              <button id="btn-adv-clear" class="btn-secondary-sm">Clear</button>
+              <button id="btn-adv-apply" class="btn-primary-sm">Apply</button>
+            </div>
+          </div>
         </div>
-        
+
         <div class="sidebar-actions">
-          <button id="btn-advanced-search" class="btn-secondary">🔍 Advanced</button>
-          <button id="btn-global-analysis" class="btn-secondary">📊 Analytics</button>
-          <button id="btn-export-csv" class="btn-secondary">📥 Export CSV</button>
+          <button id="btn-advanced-search" class="sidebar-btn">
+            <span class="btn-emoji">🔍</span> Advanced Search
+          </button>
+          <button id="btn-global-analysis" class="sidebar-btn">
+            <span class="btn-emoji">📊</span> Analytics
+          </button>
+          <button id="btn-export-csv" class="sidebar-btn">
+            <span class="btn-emoji">📥</span> Export CSV
+          </button>
+          <button id="btn-export-json" class="sidebar-btn">
+            <span class="btn-emoji">💾</span> Export JSON
+          </button>
+          <button id="btn-import-json" class="sidebar-btn">
+            <span class="btn-emoji">📂</span> Import JSON
+          </button>
+          <button id="btn-change-pin" class="sidebar-btn">
+            <span class="btn-emoji">🔑</span> Change PIN
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display:none">
         </div>
-        
+
+        <div id="filter-count" class="filter-count-bar"></div>
+
         <div class="conversation-list" id="conversation-list">
           <!-- Conversations rendered here -->
         </div>
@@ -154,6 +248,28 @@
 
       <!-- Main Content -->
       <main class="main-content">
+        <!-- Persistent toolbar: meta info + display settings -->
+        <div class="content-toolbar" id="content-toolbar">
+          <div class="toolbar-meta" id="toolbar-meta">
+            <span style="color:var(--text-faint);font-size:12px;">Select a conversation →</span>
+          </div>
+          <div class="toolbar-settings">
+            <select id="setting-font" class="toolbar-select" title="Font family">
+              <option value="system">System UI</option>
+              <option value="serif">Serif</option>
+              <option value="mono">Monospace</option>
+            </select>
+            <button id="btn-font-decrease" class="toolbar-btn" title="Smaller text">A−</button>
+            <span id="font-size-label" class="toolbar-size-label">15px</span>
+            <button id="btn-font-increase" class="toolbar-btn" title="Larger text">A+</button>
+            <select id="setting-line-height" class="toolbar-select" title="Line spacing">
+              <option value="1.4">Compact</option>
+              <option value="1.65" selected>Normal</option>
+              <option value="1.9">Relaxed</option>
+            </select>
+          </div>
+        </div>
+
         <!-- Empty State -->
         <div id="empty-state" class="empty-state">
           <div class="empty-state-icon">📚</div>
@@ -165,15 +281,18 @@
         <div id="detail-view" class="detail-view hidden">
           <!-- Dynamic content rendered here -->
         </div>
-      </main>
-    </div>
 
-    <!-- Analysis View (Overlay) -->
-    <div id="analysis-view" class="analysis-view hidden">
-      <!-- Dynamic analysis content -->
+        <!-- Analytics View (shown in main content area, sidebar stays visible) -->
+        <div id="analysis-view" class="analysis-view hidden">
+          <!-- Dynamic analysis content -->
+        </div>
+      </main>
     </div>
   </div>
 
-  <script type="module" src="./scripts/viewer.js"></script>
+  <!-- Toast notifications -->
+  <div id="toast-container"></div>
+
+  <script type="module" src="../../viewer/scripts/viewer-app.ts"></script>
 </body>
 </html>
